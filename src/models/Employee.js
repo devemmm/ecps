@@ -37,7 +37,8 @@ employeeSchema.methods.toJSON = function(){
     const employee = this
     const employeeObject = employee.toObject()
 
-    // delete employeeObject.password
+    delete employeeObject.password
+    delete employeeObject.tokens
 
     return employeeObject
 }

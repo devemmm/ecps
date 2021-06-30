@@ -32,7 +32,8 @@ adminSchema.methods.toJSON = function(){
     const admin = this
     const adminObject = admin.toObject()
 
-    // delete adminObject.password
+    delete adminObject.password
+    delete adminObject.tokens
 
     return adminObject
 }
