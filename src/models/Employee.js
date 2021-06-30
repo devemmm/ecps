@@ -22,8 +22,7 @@ const employeeSchema = new mongoose.Schema({
     cid: {
         type: Number,
         required: true,
-        trim: true,
-        unique: true
+        trim: true
     },
     c_id: {
         type: mongoose.Schema.Types.ObjectId,

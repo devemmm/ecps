@@ -1,34 +1,50 @@
 const mongoose = require('mongoose')
 
 const orderSchema = new mongoose.Schema({
+    oid :{
+        // Shop id
+        type: Number,
+        req: true,
+        required: true
+    },
     sid: {
         // Shop id
-        type: mongoose.Schema.Types.ObjectId,
+        type: Number,
         req: true,
         ref: 'Company'
     },
     cid: {
         // Company Id
-        type: mongoose.Schema.Types.ObjectId,
+        type: Number,
         req: true,
         ref: 'Company'
     },
-    eid: {
-        // Employee Id
-        type: mongoose.Schema.Types.ObjectId,
+    uid: {
+        // Employee user Id
+        type: Number,
         req: true,
         ref: 'Company'
     },
     pid: {
         // Product Id
-        type: String,
+        type: Number,
         trim: true,
         default: 'Pending'
     },
-    orderDate:{
-        // Order Time timestamp
-        type: Date,
+    name: {
+        // Product Name
+        type: String,
+        trim: true,
         required: true
+    },
+    price: {
+        type: Number,
+        trim: true,
+        required: true
+    },
+    orderDate:{
+        type: String,
+        default : new Date()
     },
     status: {
         // Order status === {Pending, Approved}

@@ -88,6 +88,22 @@ const generateUid = async(type, id)=>{
             })
             productUid = productUid.sort((a,b)=>b-a)
             return productUid[0] + 1 
+        case 'Order':
+            const order =  await Order.find({})
+
+            if(order.length == 0 ){
+                return 1
+            }
+
+            var orderId = []
+
+            order.forEach(order =>{
+                orderId.push(order.oid)
+            })
+
+            orderId = orderId.sort((a,b)=>b-a)
+
+            return orderId[0]+1
         default:
             return null;
     }

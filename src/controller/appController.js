@@ -3,6 +3,7 @@ const Company = require('../models/Company')
 const Employee = require('../models/Employee')
 const Shop = require('../models/Shop')
 const Product = require('../models/Product')
+const Order = require('../models/Order')
 const { generateUid } = require('../components/generateUi')
 const {requireAuth } = require('../middleware/reqAuth')
 const { 
@@ -388,6 +389,168 @@ const findAllProducts = [
         }
     }
 ]
+
+const proccesCat = [
+    requireAuth, async(req, res)=>{
+        try {
+            
+            // Extract company id {cid}, employee {eid} from Authorised Employee
+            const { cid, uid } = req.employee
+            
+            // Generate order id 
+            const oid = await generateUid("Order")
+
+            // extract shop id {sid} product id {pid} name {name} price {price} from every product in cat
+            const cat = req.body
+
+            if(cat.length === 0 ){
+                throw new Error("Cat is Empty")
+            }
+
+            // create order 
+            cat.forEach( async product => {
+                const { sid, pid, name, price } = product
+                if(!sid || !pid || !name || !price){
+                    throw new Error("missing some Product Details")
+                }
+                const order = new Order({
+                    oid,
+                    sid,
+                    cid,
+                    uid,
+                    pid,
+                    name,
+                    price
+                })
+                // console.log(order)
+
+                await order.save()
+            });
+
+            res.status(200).json({message: 'Cat Procced'})
+        } catch (error) {
+            res.status(400).json({error: {message: error.message}})
+        }
+    }
+]
+
+const allOrder = [
+    requireAuth, async(req, res)=>{
+        try {
+            const admin = req.admin
+            if(!admin){
+                throw new Error("You haven't permission to list Employee Order")
+            }
+            const order = await Order.find({})
+            res.status(200).json({order})
+        } catch (error) {
+            res.status(400).json({error: {message: error.message}})
+        }
+    }
+]
+
+const allOrderByShop = [
+    requireAuth, async(req, res)=>{
+        try {
+            const shop = req.shop
+            if(!shop){
+                throw new Error("You haven't permission to list Employee Order")
+            }
+            const order = await Order.find({sid: shop.uid})
+            res.status(200).json({order})
+        } catch (error) {
+            res.status(400).json({error: {message: error.message}})
+        }
+    }
+]
+
+const getEmployeeOrder = [
+    requireAuth, async(req, res)=>{
+        try {
+            const employee = req.employee
+            if(employee.userType != 2){
+                throw new Error("You haven't permission to list Employee Order")
+            }
+            const order = await Order.find({cid: employee.cid})
+            res.status(200).json({order})
+        } catch (error) {
+            res.status(400).json({error: {message: error.message}})
+        }
+    }
+]
+
+
+const shopList = [
+    requireAuth, async(req, res)=>{
+        try {
+            const admin = req.admin
+            if(!admin){
+                throw new Error("You haven't permission to list shop")
+            }
+
+            const shops = await Shop.find({})
+            res.status(200).json(shops)
+        } catch (error) {
+            res.status(400).json({error: {message: error.message}})
+        }
+    }
+]
+
+const companyList = [
+    requireAuth, async(req, res)=>{
+        try {
+            const admin = req.admin
+            if(!admin){
+                throw new Error("You haven't permission to list shop")
+            }
+
+            const companies = await Company.find({})
+            res.status(200).json(companies)
+        } catch (error) {
+            res.status(400).json({error: {message: error.message}})
+        }
+    }
+]
+
+const employeeList = [
+    requireAuth, async(req, res)=>{
+        try {
+            const employee = req.employee
+            if(employee.userType !=2){
+                throw new Error("You haven't permission to list Employee")
+            }
+
+            const employees = await Employee.find({cid: employee.cid})
+            res.status(200).json(employees)
+        } catch (error) {
+            res.status(400).json({error: {message: error.message}})
+        }
+    }
+]
+
+const confirmOrder = [
+    requireAuth, async(req, res)=>{
+        try {
+            const shop = req.shop 
+
+            if(!shop){
+                throw new Error("You haven't permission to confirm this Order")
+            }
+
+            res.status(200).json({message: 'system under maintainance'})
+        } catch (error) {
+            res.status(400).json({error: {message: error.message}})
+        }
+    }
+]
+
+const notFound = [
+    (req, res)=>{
+        res.json({status: 404, message: 'Page not Found'})
+    }
+]
+
+
 module.exports = {
     index,
     signin,
@@ -397,5 +560,14 @@ module.exports = {
     registerAdmin,
     registerCompany,
     registerEmployee,
-    findAllProducts
+    findAllProducts,
+    proccesCat,
+    allOrder,
+    allOrderByShop,
+    getEmployeeOrder,
+    shopList,
+    companyList,
+    employeeList,
+    confirmOrder,
+    notFound
 }
