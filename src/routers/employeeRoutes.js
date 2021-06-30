@@ -7,7 +7,7 @@ const {
     proccesCat
     } = require('../controller/appController')
 
-router.get('/', )
+router.get('/', index)
 
 router.get('/user/product', findAllProducts)
 
