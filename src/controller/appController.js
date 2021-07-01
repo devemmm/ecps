@@ -120,6 +120,7 @@ const register = [
             }
             
             req.body.uid = await generateUid('Admin')
+            req.body.userType = 3
             req.body.password = 'admin@12345'
             const admin = new Admin({
                 ...req.body,
