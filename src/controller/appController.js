@@ -384,13 +384,11 @@ const registerProduct = [
                 throw new Error("Product Picture must be required")
             }
 
-            const projectHost = "https://ecps.herokuapp.com"
-
-            let path = (req.file.path).replace('src/public', projectHost)
+            let path = (req.file.path).replace('src/public', process.env.SITE_URL)
             
-            if(process.env.NODE_ENV === "development"){
-                path = (req.file.path).replace('src/public', process.env.SITE_URL)
-            }
+            // if(process.env.NODE_ENV === "development"){
+            //     path = (req.file.path).replace('src/public', process.env.SITE_URL)
+            // }
             
 
             // Chexk if is valid Product

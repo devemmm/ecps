@@ -27,8 +27,4 @@ app.use(hrRoutes)
 app.use(shopRoutes)
 app.use(employeeRoutes)
 
-
 app.listen(port, ()=>console.log(`Server is running on port ${port}`))
-
-
-console.log(process)
