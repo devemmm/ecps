@@ -19,7 +19,7 @@ const shopSchema = new mongoose.Schema({
     password,
     tokens,
     tinNumber: {
-        type: String,
+        type: Number,
         trim: true,
         required: true,
         unique: true
@@ -27,7 +27,7 @@ const shopSchema = new mongoose.Schema({
     product : [
         {
             pid : {
-                type: String,
+                type: Number,
                 trim: true,
                 required: true
             }
