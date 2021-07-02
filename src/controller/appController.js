@@ -1,3 +1,4 @@
+const multer = require('multer')
 const Admin = require('../models/Admin')
 const Company = require('../models/Company')
 const Employee = require('../models/Employee')
@@ -337,20 +338,61 @@ const registerShop = [
     }
 ]
 
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './src/public/product')
+    },
+    filename: function(req, file, cb) {
+        cb(null, new Date().toISOString() + file.originalname)
+    }
+    // filename: function(req, file, cb) {
+    //     cb(null, file.originalname)
+    // }
+    
+})
+
+const product = multer({
+    storage,
+    limits: {
+        fieldSize: 2048
+    },
+    fileFilter(req, file, cb) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+            return cb(new Error('Please Upload a Valid File'))
+        }
+
+        cb(undefined, true)
+    }
+})
+
 const registerProduct = [
-    requireAuth, async(req, res)=>{
+    requireAuth, product.single('product'), async(req, res)=>{
         const shop = req.shop
 
         if(!shop){
             return res.status(500).json({error: {message: 'No Access To create Product'}})
         }
 
-        const { name, price, photo} = req.body
-        if(!name || !price || !photo){
+        const { name, price} = req.body
+        if(!name || !price){
             return res.status(500).json({error: {message: 'Missing some Product Details'}})
         }
 
         try {
+            
+            if(!req.file){
+                throw new Error("Product Picture must be required")
+            }
+
+            const projectHost = "https://ecps.herokuapp.com"
+
+            let path = (req.file.path).replace('src/public', projectHost)
+            
+            if(process.env.NODE_ENV === "development"){
+                path = (req.file.path).replace('src/public', process.env.SITE_URL)
+            }
+            
+
             // Chexk if is valid Product
             if(await isExistProduct()){
                 return res.status(500).json({error: {message: 'Product Already Exist'}})
@@ -360,7 +402,7 @@ const registerProduct = [
             const product = new Product({
                 name,
                 price,
-                photo,
+                photo : path,
                 pid: await generateUid('Product', uid),
                 sid: uid,
             })
