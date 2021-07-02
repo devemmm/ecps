@@ -11,6 +11,8 @@ router.post('/register/product', registerProduct)
 router.get('/shop/order', allOrderByShop)
 
 // confirm Order
-router.patch('/order', confirmOrder)
+//require oid and pid as a query string
+
+router.patch('/order/:uid', confirmOrder)
 
 module.exports = router

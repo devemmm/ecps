@@ -55,7 +55,7 @@ const salaryDetails = {
     balance:{
         type: Number,
         trim: true,
-        default: 0
+        default: 300000
     },
 }
 

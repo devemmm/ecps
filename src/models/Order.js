@@ -28,8 +28,7 @@ const orderSchema = new mongoose.Schema({
     pid: {
         // Product Id
         type: Number,
-        trim: true,
-        default: 'Pending'
+        trim: true
     },
     name: {
         // Product Name
@@ -47,7 +46,7 @@ const orderSchema = new mongoose.Schema({
         default : new Date()
     },
     status: {
-        // Order status === {Pending, Approved}
+        // Order status === {Pending, Completed}
         type: String,
         trim: true,
         default: 'Pending'

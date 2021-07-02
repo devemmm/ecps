@@ -533,11 +533,53 @@ const confirmOrder = [
     requireAuth, async(req, res)=>{
         try {
             const shop = req.shop 
+            const { uid } = req.params
+            const { oid, pid } = req.query
+
+            if(!oid || !pid){
+                throw new Error("Missing Some Required Information in your Request")
+            }
 
             if(!shop){
                 throw new Error("You haven't permission to confirm this Order")
             }
 
+            const order  = await Order.findOne({sid: shop.uid, oid, pid, uid})
+
+            if(!order){
+                throw new Error("Order not found")
+            }
+
+            if(order.status === "Completed"){
+                throw new Error("Order Already Completed")
+            }
+
+            const employee = await Employee.findOne({uid : order.uid})
+
+            if(!employee){
+                throw new Error("Internal Server error there is no Employee Found")
+            }
+
+            try {
+                
+                const {salary, credit, balance } = employee.salaryDetails
+                
+                if(balance < order.price){
+                    throw new Error("Insufficiency Balance")
+                }
+
+                employee.salaryDetails.credit = credit + order.price
+                employee.salaryDetails.balance = salary - employee.salaryDetails.credit
+
+                await employee.save()
+
+                order.status = "Completed"
+                await order.save()
+                return res.status(200).json({order, employee})
+            } catch (error) {
+                return res.status(400).json({error: {message: error.message}})
+            }
+            
             res.status(200).json({message: 'system under maintainance'})
         } catch (error) {
             res.status(400).json({error: {message: error.message}})
